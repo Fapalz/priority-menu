@@ -1,13 +1,17 @@
-let passiveSupported = false;
+// eslint-disable-next-line import/no-mutable-exports
+let passiveSupported = false
 
 try {
-  var options = Object.defineProperty({}, "passive", {
-    get: function () {
-      passiveSupported = true;
-    }
-  });
+  const options = Object.defineProperty({}, 'passive', {
+    get() {
+      passiveSupported = true
+      return true
+    },
+  })
 
-  window.addEventListener("test", null, options);
-} catch (err) { }
+  window.addEventListener('test', null, options)
+} catch (err) {
+  console.log(err)
+}
 
 export default passiveSupported

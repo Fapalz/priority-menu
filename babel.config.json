@@ -4,12 +4,10 @@
     [
       "@babel/env",
       {
-        "useBuiltIns": "usage",
-        "corejs": "3.8",
         "modules": false,
         "bugfixes": true,
         "debug": false,
-        "loose": false
+        "loose": true
       }
     ]
   ],
@@ -26,14 +24,6 @@
       "@babel/plugin-proposal-class-properties",
       {
         "loose": true
-      }
-    ],
-    [
-      "@babel/transform-runtime",
-      {
-        "useESModules": true,
-        "corejs": false,
-        "helpers": true
       }
     ]
   ]

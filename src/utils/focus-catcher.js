@@ -9,11 +9,11 @@ export const FOCUSABLE_ELEMENTS = [
   'object',
   'embed',
   '[contenteditable]',
-  '[tabindex]:not([tabindex^="-"])'
+  '[tabindex]:not([tabindex^="-"])',
 ]
 
 export function getFocusableNodes(container) {
-  if (!container) return
+  if (!container) return false
   const nodes = container.querySelectorAll(FOCUSABLE_ELEMENTS)
   return Array(...nodes)
 }
@@ -24,7 +24,7 @@ export function getFocusableNodes(container) {
  */
 export function setFocusToFirstNode(container) {
   if (!container) return
-  
+
   const focusableNodes = getFocusableNodes(container)
 
   // no focusable nodes
@@ -52,14 +52,13 @@ export function retainFocus(event, container) {
    * Filters nodes which are hidden to prevent
    * focus leak outside modal
    */
-  focusableNodes = focusableNodes.filter(node => {
-    return (node.offsetParent !== null)
+  focusableNodes = focusableNodes.filter((node) => {
+    return node.offsetParent !== null
   })
-
 
   // if disableFocus is true
   if (!container.contains(document.activeElement)) {
-    focusableNodes[0].focus();
+    focusableNodes[0].focus()
     event.preventDefault()
   } else {
     const focusedItemIndex = focusableNodes.indexOf(document.activeElement)
@@ -69,7 +68,11 @@ export function retainFocus(event, container) {
       event.preventDefault()
     }
 
-    if (!event.shiftKey && focusableNodes.length > 0 && focusedItemIndex === focusableNodes.length - 1) {
+    if (
+      !event.shiftKey &&
+      focusableNodes.length > 0 &&
+      focusedItemIndex === focusableNodes.length - 1
+    ) {
       focusableNodes[0].focus()
       event.preventDefault()
     }
