@@ -1,5 +1,5 @@
 module.exports = {
-  name: 'MyLibrary',
+  name: 'PriorityMenu',
   outputName: 'index',
   external: [],
 }
