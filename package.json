@@ -4,7 +4,6 @@
   "description": "GitHub template for starting new projects",
   "main": "./package/index.js",
   "module": "./package/index.es.js",
-  "private": "false",
   "scss": "package/assets/index.scss",
   "css": "package/index.css",
   "scripts": {
