@@ -1,4 +1,8 @@
-import { randomString, throttle, isDomElement } from '../utils/index'
+import {
+  randomString,
+  throttle,
+  isDomElement,
+} from '@fapalz/utils/src/utils/index'
 
 export default class PriorityMenu {
   constructor(element, options) {

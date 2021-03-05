@@ -6,6 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <link rel="stylesheet" href="../build/index.css">
   <style>
     body {
       min-height: 200vh;
@@ -81,6 +82,12 @@
     </nav>
   </header>
   <script type="module" src="./main.js"></script>
+  <script nomodule="" src="../build/index.js"></script>
+  <script>
+    var nav = new PriorityMenu('.page-navigation', {
+      itemsListSelector: 'ul',
+    })
+  </script>
 </body>
 
 </html>

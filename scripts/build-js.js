@@ -33,8 +33,8 @@ async function buildUMD() {
   const { code, map } = await minify(result.code, {
     sourceMap: {
       content: result.map,
-      filename: `dom7.min.js`,
-      url: `dom7.min.js.map`,
+      filename: `${config.outputName}.min.js`,
+      url: `${config.outputName}.min.js.map`,
     },
     output: {
       preamble: banner,

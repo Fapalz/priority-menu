@@ -1,5 +1,5 @@
 module.exports = {
   name: 'PriorityMenu',
   outputName: 'index',
-  external: [],
+  external: ['@fapalz/utils/src/utils/index'],
 }

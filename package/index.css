@@ -1,0 +1,68 @@
+/**
+ * Library 1.0.0
+ * GitHub template for starting new projects
+ * https://github.com/Fapalz/library-starter#readme
+ *
+ * Copyright 2020-2021 Gladikov Kirill - Fapalz <blacesmot@gmail.com>
+ *
+ * Released under the MIT License
+ *
+ * Released on: March 5, 2021
+ */
+
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: sans-serif;
+}
+
+.page-navigation {
+  display: block;
+}
+.page-navigation__list {
+  display: flex;
+  width: 100%;
+  list-style: none;
+  padding-left: 0;
+  margin-bottom: 0;
+  margin-top: 0;
+  transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out 0.2s;
+}
+.page-navigation__list .page-navigation__list {
+  position: absolute;
+  flex-direction: column;
+}
+.page-navigation__list .page-navigation__list .page-navigation__list {
+  top: 0;
+  left: 100%;
+}
+.page-navigation__item {
+  padding: 5px;
+}
+.page-navigation__item--more[aria-hidden=true] {
+  visibility: hidden;
+  position: absolute;
+  pointer-events: none;
+  z-index: -10;
+}
+.page-navigation__link {
+  display: block;
+  text-align: center;
+  font-size: clamp(12px, 1vw, 24px);
+}
+.page-navigation .dropdown-menu {
+  display: none;
+  transition: opacity 0.2s ease-in-out;
+  opacity: 0;
+}
+.page-navigation .dropdown-menu.is-enter {
+  display: block;
+}
+.page-navigation .dropdown-menu.is-enter-active {
+  opacity: 1;
+}
