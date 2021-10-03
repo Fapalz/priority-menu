@@ -1,5 +1,5 @@
 /**
- * Library 1.0.0
+ * Library 1.0.1
  * GitHub template for starting new projects
  * https://github.com/Fapalz/priority-menu#readme
  *
@@ -7,7 +7,7 @@
  *
  * Released under the MIT License
  *
- * Released on: March 5, 2021
+ * Released on: October 3, 2021
  */
 
 *,
@@ -18,11 +18,40 @@
 
 body {
   margin: 0;
-  font-family: sans-serif;
+  font-family: "Montserrat", sans-serif;
+}
+
+.page-header {
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+.container {
+  width: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
+  margin: auto;
+}
+@media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+}
+@media (min-width: 980px) {
+  .container {
+    max-width: 920px;
+  }
+}
+@media (min-width: 1200px) {
+  .container {
+    max-width: 1140px;
+  }
 }
 
 .page-navigation {
   display: block;
+  font-size: 16px;
 }
 .page-navigation__list {
   display: flex;
@@ -33,27 +62,10 @@ body {
   margin-top: 0;
   transition: opacity 0.2s ease-in-out, visibility 0.2s ease-in-out 0.2s;
 }
-.page-navigation__list .page-navigation__list {
-  position: absolute;
-  flex-direction: column;
-}
-.page-navigation__list .page-navigation__list .page-navigation__list {
-  top: 0;
-  left: 100%;
-}
-.page-navigation__item {
-  padding: 5px;
-}
-.page-navigation__item--more[aria-hidden=true] {
-  visibility: hidden;
-  position: absolute;
-  pointer-events: none;
-  z-index: -10;
-}
 .page-navigation__link {
   display: block;
   text-align: center;
-  font-size: clamp(12px, 1vw, 24px);
+  padding: 5px 12px;
 }
 .page-navigation .dropdown-menu {
   display: none;
@@ -65,4 +77,11 @@ body {
 }
 .page-navigation .dropdown-menu.is-enter-active {
   opacity: 1;
+}
+
+[data-priority-menu][aria-hidden=true] {
+  visibility: hidden;
+  position: absolute;
+  pointer-events: none;
+  z-index: -10;
 }

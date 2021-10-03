@@ -1,78 +1,37 @@
 /**
- * PriorityMenu  1.0.0
+ * PriorityMenu  1.0.1
  * GitHub template for starting new projects
- * https://github.com/Fapalz/library-starter#readme
+ * https://github.com/Fapalz/priority-menu#readme
  *
  * Copyright 2020-2021 Gladikov Kirill - Fapalz <blacesmot@gmail.com>
  *
  * Released under the MIT License
  *
- * Released on: March 5, 2021
+ * Released on: October 3, 2021
  */
 
 'use strict';
 
-var randomString = function randomString(i) {
-  var rnd = '';
-
-  while (rnd.length < i) {
-    rnd += Math.random().toString(36).substring(2);
-  }
-
-  return rnd.substring(0, i);
-};
-
-var throttle = function throttle(fn, threshhold, scope) {
-  if (threshhold === void 0) {
-    threshhold = 250;
-  }
-
-  var last;
-  var deferTimer; // eslint-disable-next-line func-names
-
-  return function () {
-    for (var _len = arguments.length, args = new Array(_len), _key = 0; _key < _len; _key++) {
-      args[_key] = arguments[_key];
-    }
-
-    var context = scope || this;
-    var now = +new Date();
-
-    if (last && now < last + threshhold) {
-      // hold on to it
-      clearTimeout(deferTimer);
-      deferTimer = setTimeout(function () {
-        last = now;
-        fn.apply(context, args);
-      }, threshhold);
-    } else {
-      last = now;
-      fn.apply(context, args);
-    }
-  };
-};
-
-function isDomElement(obj) {
-  return !!(obj && obj.nodeType === 1);
-}
+var index = require('@fapalz/utils/src/utils/index');
 
 var PriorityMenu = /*#__PURE__*/function () {
   function PriorityMenu(element, options) {
     this.options = PriorityMenu.mergeSettings(options);
     this.element = typeof element === 'string' ? document.querySelector(element) : element;
 
-    if (!isDomElement(this.element)) {
+    if (!index.isDomElement(this.element)) {
       throw new Error('Element shold be is ELEMENT_NODE, check your parameter');
     }
 
     this.resizeListener = null;
     this.isInit = false;
-    this.mq = false;
+    this.matchMedia = false;
 
     if (window.matchMedia && this.options.breakpointDestroy) {
-      this.mq = window.matchMedia(this.options.breakpointDestroy);
-      this.mq.addEventListener('change', this.mqDestroy.bind(this));
-      this.mqDestroy(this.mq);
+      this.matchMedia = window.matchMedia(this.options.breakpointDestroy);
+      this.matchMediaListener = this.matchMediaListener.bind(this);
+      this.matchMedia.addEventListener('change', this.matchMediaListener);
+      this.matchMediaListener(this.matchMedia);
     } else {
       this.init();
     }
@@ -90,7 +49,7 @@ var PriorityMenu = /*#__PURE__*/function () {
       containerSelector: false,
       containerWidthOffset: 10,
       itemsListSelector: false,
-      delay: 300,
+      delay: 100,
       breakpointDestroy: false,
       updateWidthOnResize: false,
       dropdownMenuId: false,
@@ -106,7 +65,11 @@ var PriorityMenu = /*#__PURE__*/function () {
       dropdownMenuClass: 'dropdown-menu',
       dropdownMenuTemplate: '<li {{dataMenu}} class="{{menuItemClass}}" aria-hidden="true">' + '<a id="{{dropdownMenuId}}" href="#" class="{{dropdownToogleClass}}" role="button" aria-haspopup="true" aria-expanded="false">' + '{{dropdownLabel}}' + '</a>' + '<ul class="{{dropdownMenuClass}}" {{dataMenuList}} aria-labelledby="{{dropdownMenuId}}"></ul>' + '</li>',
       moved: function moved() {},
-      movedBack: function movedBack() {}
+      movedBack: function movedBack() {},
+      init: function init() {},
+      initLayout: function initLayout() {},
+      ready: function ready() {},
+      destroy: function destroy() {}
     };
     var userSttings = Object.keys(options);
     userSttings.forEach(function (name) {
@@ -117,8 +80,8 @@ var PriorityMenu = /*#__PURE__*/function () {
 
   var _proto = PriorityMenu.prototype;
 
-  _proto.mqDestroy = function mqDestroy(mq) {
-    if (mq.matches) {
+  _proto.matchMediaListener = function matchMediaListener(matchMedia) {
+    if (matchMedia.matches) {
       if (this.isInit) {
         this.destroy();
       }
@@ -136,15 +99,14 @@ var PriorityMenu = /*#__PURE__*/function () {
     var overflowMenu = this.itemsList.querySelector("[" + this.options.dataMenu + "]");
 
     if (!overflowMenu) {
-      var menuId = this.options.dropdownMenuId ? this.options.dropdownMenuId : "priority-menu-more-" + randomString(6);
+      var menuId = this.options.dropdownMenuId ? this.options.dropdownMenuId : "priority-menu-more-" + index.randomString(6);
       var menuHtml = this.options.dropdownMenuTemplate.replace('{{dropdownLabel}}', this.options.dropdownLabel).replace('{{menuItemClass}}', this.options.menuItemClass).replace('{{dropdownToogleClass}}', this.options.dropdownToogleClass).replace('{{dropdownMenuClass}}', this.options.dropdownMenuClass).replace('{{dataMenu}}', this.options.dataMenu).replace('{{dataMenuToggle}}', this.options.dataMenuToggle).replace('{{dataMenuList}}', this.options.dataMenuList).replace(new RegExp('{{dropdownMenuId}}', 'g'), menuId); // Create DOM structure for the menu
 
       var menuDOM = document.createElement('div');
       menuDOM.innerHTML = menuHtml; // Append menu as last child of <ul> list
       // NOTE: we could have used innerHTML, but it breaks event listeners and we want to play nicely :)
 
-      this.itemsList.appendChild(menuDOM.firstChild);
-      overflowMenu = this.itemsList.querySelector("[" + this.options.dataMenu + "]");
+      overflowMenu = this.itemsList.appendChild(menuDOM.firstChild);
     } // When overFlow menu was not created, throw error
 
 
@@ -175,11 +137,11 @@ var PriorityMenu = /*#__PURE__*/function () {
 
 
       if (item.hasAttribute(this.options.dataStableItem)) {
-        stableItemsWidth += Math.ceil(item.offsetWidth);
+        stableItemsWidth += Math.ceil(item.getBoundingClientRect().width);
         continue;
       }
 
-      itemBreakpoint += Math.ceil(item.offsetWidth);
+      itemBreakpoint += Math.ceil(item.getBoundingClientRect().width);
       breakpoints.push(itemBreakpoint);
     }
 
@@ -197,7 +159,7 @@ var PriorityMenu = /*#__PURE__*/function () {
     if (this.options.delay === 0) {
       this.resizeListener = this.reflowNavigation.bind(this);
     } else {
-      this.resizeListener = throttle(this.reflowNavigation, this.options.delay, this);
+      this.resizeListener = index.throttle(this.reflowNavigation, this.options.delay, this);
     }
 
     window.addEventListener('resize', this.resizeListener);
@@ -224,7 +186,7 @@ var PriorityMenu = /*#__PURE__*/function () {
     } else if (overflowIndex > 0 && this.dropdownMenuWidth > 0 && !this.options.updateWidthOnResize) {
       return this.dropdownMenuWidth;
     } else {
-      this.dropdownMenuWidth = Math.ceil(this.overflowMenu.offsetWidth);
+      this.dropdownMenuWidth = Math.ceil(this.overflowMenu.getBoundingClientRect().width);
     }
 
     return this.dropdownMenuWidth;
@@ -236,7 +198,7 @@ var PriorityMenu = /*#__PURE__*/function () {
   ;
 
   _proto.updateContainerWidth = function updateContainerWidth() {
-    this.containerWidth = Math.ceil(this.container.offsetWidth - this.options.containerWidthOffset);
+    this.containerWidth = Math.floor(this.container.getBoundingClientRect().width - this.options.containerWidthOffset);
     return this.containerWidth;
   }
   /**
@@ -272,6 +234,7 @@ var PriorityMenu = /*#__PURE__*/function () {
     this.overflowBreakpoints.unshift(breakpoint); // REMOVE: last breakpoint, which coresponds with link width
 
     this.breakpoints.pop();
+    this.options.moved.call(this, item, this);
     return this.overflowBreakpoints;
   }
   /**
@@ -290,6 +253,7 @@ var PriorityMenu = /*#__PURE__*/function () {
     this.overflowBreakpoints.shift(); // Note: AppendChild is buggy with nested submenu
 
     this.itemsList.insertBefore(item, this.overflowMenu);
+    this.options.movedBack.call(this, item, this);
     return this.overflowBreakpoints;
   }
   /**
@@ -335,7 +299,6 @@ var PriorityMenu = /*#__PURE__*/function () {
 
 
     var navListItems = this.itemsList.children;
-    var menuIndex = navListItems.length;
     var unStableItems = [];
 
     for (var i = 0; i < navListItems.length; i += 1) {
@@ -350,14 +313,14 @@ var PriorityMenu = /*#__PURE__*/function () {
 
     this.updateDropdownMenuWidth();
     this.updateContainerWidth();
-    menuIndex = unStableItems.length;
+    var unStableItemsLength = unStableItems.length;
 
-    while (menuIndex) {
-      menuIndex -= 1;
-      var itemBreakpoint = this.breakpoints[menuIndex]; // Add items, which overflow to menu "more"
+    while (unStableItemsLength) {
+      unStableItemsLength -= 1;
+      var itemBreakpoint = this.breakpoints[unStableItemsLength]; // Add items, which overflow to menu "more"
 
       if (itemBreakpoint >= this.getAvailableContainerWidth()) {
-        this.addToOverflow(unStableItems[menuIndex], itemBreakpoint);
+        this.addToOverflow(unStableItems[unStableItemsLength], itemBreakpoint);
         this.updateDropdownMenuWidth();
       }
     } // Check current overflow menu items
@@ -398,18 +361,12 @@ var PriorityMenu = /*#__PURE__*/function () {
   _proto.destroy = function destroy() {
     // Destroy navPriority data
     // Remove event listener
-    this.detachEvents(); // Add all items back to menu
-
-    var overflowIndex = this.getCountOverflowItems(); // Remove items, which can be added back to the menu
-
-    while (overflowIndex) {
-      overflowIndex -= 1;
-      this.removeFromOverflow(this.overflowList.children[0], this.overflowBreakpoints[0]);
-    } // Remove dropdown
-
+    this.detachEvents();
+    this.removeAllFromOverflow(); // Remove dropdown
 
     this.toggleOverflowDropdown(this.overflowList.children.length === 0);
     this.isInit = false;
+    this.options.destroy.call(this, this);
     return this.element;
   }
   /**
@@ -422,6 +379,7 @@ var PriorityMenu = /*#__PURE__*/function () {
       return;
     }
 
+    this.options.init.call(this, this);
     this.container = undefined;
     this.itemsList = undefined;
     this.containerWidth = 0;
@@ -439,14 +397,16 @@ var PriorityMenu = /*#__PURE__*/function () {
 
     this.overflowAlways = this.overflowList.children.length > 0;
     this.overflowBreakpoints = []; // We need style to calculate paddings of the container element
+    // this.elementStyle = window.getComputedStyle(this.element)
 
-    this.elementStyle = window.getComputedStyle(this.element); // Calculate navigation breakpoints
+    this.options.initLayout.call(this, this); // Calculate navigation breakpoints
 
     this.breakpoints = this.getBreakpoints(); // Initialize nav priority default state
 
     this.attachEvents();
     this.reflowNavigation();
     this.isInit = true;
+    this.options.ready.call(this, this);
   };
 
   return PriorityMenu;
