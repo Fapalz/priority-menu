@@ -6,25 +6,31 @@ import {
 
 export default class PriorityMenu {
   constructor(element, options) {
-    this.options = PriorityMenu.mergeSettings(options)
+    try {
+      this.options = PriorityMenu.mergeSettings(options)
 
-    this.element =
-      typeof element === 'string' ? document.querySelector(element) : element
-    if (!isDomElement(this.element)) {
-      throw new Error('Element shold be is ELEMENT_NODE, check your parameter')
-    }
+      this.element =
+        typeof element === 'string' ? document.querySelector(element) : element
+      if (!isDomElement(this.element)) {
+        throw new Error(
+          'Element shold be is ELEMENT_NODE, check your parameter'
+        )
+      }
 
-    this.resizeListener = null
-    this.isInit = false
-    this.matchMedia = false
+      this.resizeListener = null
+      this.isInit = false
+      this.matchMedia = false
 
-    if (window.matchMedia && this.options.breakpointDestroy) {
-      this.matchMedia = window.matchMedia(this.options.breakpointDestroy)
-      this.matchMediaListener = this.matchMediaListener.bind(this)
-      this.matchMedia.addEventListener('change', this.matchMediaListener)
-      this.matchMediaListener(this.matchMedia)
-    } else {
-      this.init()
+      if (window.matchMedia && this.options.breakpointDestroy) {
+        this.matchMedia = window.matchMedia(this.options.breakpointDestroy)
+        this.matchMediaListener = this.matchMediaListener.bind(this)
+        this.matchMedia.addEventListener('change', this.matchMediaListener)
+        this.matchMediaListener(this.matchMedia)
+      } else {
+        this.init()
+      }
+    } catch (error) {
+      console.error(error)
     }
   }
 
@@ -285,7 +291,6 @@ export default class PriorityMenu {
     // REMOVE: first item from overflow menu
     this.overflowBreakpoints.shift()
 
-    // Note: AppendChild is buggy with nested submenu
     this.itemsList.insertBefore(item, this.overflowMenu)
 
     this.options.movedBack.call(this, item, this)
@@ -428,56 +433,60 @@ export default class PriorityMenu {
       return
     }
 
-    this.options.init.call(this, this)
+    try {
+      this.options.init.call(this, this)
 
-    this.container = undefined
-    this.itemsList = undefined
+      this.container = undefined
+      this.itemsList = undefined
 
-    this.containerWidth = 0
-    this.dropdownMenuWidth = 0
-    this.stableItemsWidth = 0
+      this.containerWidth = 0
+      this.dropdownMenuWidth = 0
+      this.stableItemsWidth = 0
 
-    this.container =
-      this.options.containerSelector &&
-      this.element.querySelectorAll(this.options.containerSelector)[0]
-        ? this.element.querySelectorAll(this.options.containerSelector)[0]
-        : this.element
+      this.container =
+        this.options.containerSelector &&
+        this.element.querySelectorAll(this.options.containerSelector)[0]
+          ? this.element.querySelectorAll(this.options.containerSelector)[0]
+          : this.element
 
-    this.itemsList =
-      this.options.itemsListSelector &&
-      this.element.querySelectorAll(this.options.itemsListSelector)[0]
-        ? this.element.querySelectorAll(this.options.itemsListSelector)[0]
-        : this.element // Query first unordered list, our global navigation
+      this.itemsList =
+        this.options.itemsListSelector &&
+        this.element.querySelectorAll(this.options.itemsListSelector)[0]
+          ? this.element.querySelectorAll(this.options.itemsListSelector)[0]
+          : this.element // Query first unordered list, our global navigation
 
-    this.overflowMenu = this.createOverflowMenu()
+      this.overflowMenu = this.createOverflowMenu()
 
-    this.overflowList =
-      this.overflowMenu.querySelector(`[${this.options.dataMenuList}]`) ||
-      this.overflowMenu.querySelectorAll('ul')[0]
+      this.overflowList =
+        this.overflowMenu.querySelector(`[${this.options.dataMenuList}]`) ||
+        this.overflowMenu.querySelectorAll('ul')[0]
 
-    if (!this.overflowList) {
-      throw new Error(
-        'overflowList does not exist, check your custom dropdownMenuTemplate parameter'
-      )
+      if (!this.overflowList) {
+        throw new Error(
+          'overflowList does not exist, check your custom dropdownMenuTemplate parameter'
+        )
+      }
+
+      this.overflowAlways = this.overflowList.children.length > 0
+
+      this.overflowBreakpoints = []
+
+      // We need style to calculate paddings of the container element
+      // this.elementStyle = window.getComputedStyle(this.element)
+
+      this.options.initLayout.call(this, this)
+
+      // Calculate navigation breakpoints
+      this.breakpoints = this.getBreakpoints()
+
+      // Initialize nav priority default state
+      this.attachEvents()
+      this.reflowNavigation()
+
+      this.isInit = true
+      this.options.ready.call(this, this)
+    } catch (error) {
+      console.error(error)
     }
-
-    this.overflowAlways = this.overflowList.children.length > 0
-
-    this.overflowBreakpoints = []
-
-    // We need style to calculate paddings of the container element
-    // this.elementStyle = window.getComputedStyle(this.element)
-
-    this.options.initLayout.call(this, this)
-
-    // Calculate navigation breakpoints
-    this.breakpoints = this.getBreakpoints()
-
-    // Initialize nav priority default state
-    this.attachEvents()
-    this.reflowNavigation()
-
-    this.isInit = true
-    this.options.ready.call(this, this)
   }
 }
