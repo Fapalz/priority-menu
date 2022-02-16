@@ -3,11 +3,11 @@
  * GitHub template for starting new projects
  * https://github.com/Fapalz/priority-menu#readme
  *
- * Copyright 2020-2021 Gladikov Kirill - Fapalz <blacesmot@gmail.com>
+ * Copyright 2020-2022 Gladikov Kirill - Fapalz <blacesmot@gmail.com>
  *
  * Released under the MIT License
  *
- * Released on: December 14, 2021
+ * Released on: February 16, 2022
  */
 
 *,
@@ -52,6 +52,9 @@ body {
 .page-navigation {
   display: block;
   font-size: 16px;
+}
+.page-navigation__item {
+  margin-right: 30px;
 }
 .page-navigation__list {
   display: flex;

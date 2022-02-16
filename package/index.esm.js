@@ -3,14 +3,33 @@
  * GitHub template for starting new projects
  * https://github.com/Fapalz/priority-menu#readme
  *
- * Copyright 2020-2021 Gladikov Kirill - Fapalz <blacesmot@gmail.com>
+ * Copyright 2020-2022 Gladikov Kirill - Fapalz <blacesmot@gmail.com>
  *
  * Released under the MIT License
  *
- * Released on: December 14, 2021
+ * Released on: February 16, 2022
  */
 
 import { randomString, throttle, isDomElement } from '@fapalz/utils/src/utils/index';
+
+function getWidth(el, type) {
+  if (type === 'inner') {
+    return el.clientWidth;
+  }
+
+  if (type === 'outer') {
+    return el.offsetWidth;
+  }
+
+  var s = window.getComputedStyle(el, null);
+  if (type === 'width') return el.clientWidth - parseInt(s.getPropertyValue('padding-left'), 10) - parseInt(s.getPropertyValue('padding-right'), 10);
+
+  if (type === 'full') {
+    return el.offsetWidth + parseInt(s.getPropertyValue('margin-left'), 10) + parseInt(s.getPropertyValue('margin-right'), 10);
+  }
+
+  return null;
+}
 
 var PriorityMenu = /*#__PURE__*/function () {
   function PriorityMenu(element, options) {
@@ -139,11 +158,11 @@ var PriorityMenu = /*#__PURE__*/function () {
 
 
       if (item.hasAttribute(this.options.dataStableItem)) {
-        stableItemsWidth += Math.ceil(item.getBoundingClientRect().width);
+        stableItemsWidth += Math.ceil(getWidth(item, 'full'));
         continue;
       }
 
-      itemBreakpoint += Math.ceil(item.getBoundingClientRect().width);
+      itemBreakpoint += Math.ceil(getWidth(item, 'full'));
       breakpoints.push(itemBreakpoint);
     }
 
@@ -188,7 +207,7 @@ var PriorityMenu = /*#__PURE__*/function () {
     } else if (overflowIndex > 0 && this.dropdownMenuWidth > 0 && !this.options.updateWidthOnResize) {
       return this.dropdownMenuWidth;
     } else {
-      this.dropdownMenuWidth = Math.ceil(this.overflowMenu.getBoundingClientRect().width);
+      this.dropdownMenuWidth = Math.ceil(getWidth(this.overflowMenu, 'full'));
     }
 
     return this.dropdownMenuWidth;
@@ -200,7 +219,7 @@ var PriorityMenu = /*#__PURE__*/function () {
   ;
 
   _proto.updateContainerWidth = function updateContainerWidth() {
-    this.containerWidth = Math.floor(this.container.getBoundingClientRect().width - this.options.containerWidthOffset);
+    this.containerWidth = Math.floor(getWidth(this.container, 'width') - this.options.containerWidthOffset);
     return this.containerWidth;
   }
   /**

@@ -4,6 +4,31 @@ import {
   isDomElement,
 } from '@fapalz/utils/src/utils/index'
 
+function getWidth(el, type) {
+  if (type === 'inner') {
+    return el.clientWidth
+  }
+  if (type === 'outer') {
+    return el.offsetWidth
+  }
+  const s = window.getComputedStyle(el, null)
+  if (type === 'width')
+    return (
+      el.clientWidth -
+      parseInt(s.getPropertyValue('padding-left'), 10) -
+      parseInt(s.getPropertyValue('padding-right'), 10)
+    )
+  if (type === 'full') {
+    return (
+      el.offsetWidth +
+      parseInt(s.getPropertyValue('margin-left'), 10) +
+      parseInt(s.getPropertyValue('margin-right'), 10)
+    )
+  }
+
+  return null
+}
+
 export default class PriorityMenu {
   constructor(element, options) {
     try {
@@ -166,11 +191,11 @@ export default class PriorityMenu {
 
       // Filter stable element
       if (item.hasAttribute(this.options.dataStableItem)) {
-        stableItemsWidth += Math.ceil(item.getBoundingClientRect().width)
+        stableItemsWidth += Math.ceil(getWidth(item, 'full'))
         continue
       }
 
-      itemBreakpoint += Math.ceil(item.getBoundingClientRect().width)
+      itemBreakpoint += Math.ceil(getWidth(item, 'full'))
       breakpoints.push(itemBreakpoint)
     }
 
@@ -221,9 +246,7 @@ export default class PriorityMenu {
     ) {
       return this.dropdownMenuWidth
     } else {
-      this.dropdownMenuWidth = Math.ceil(
-        this.overflowMenu.getBoundingClientRect().width
-      )
+      this.dropdownMenuWidth = Math.ceil(getWidth(this.overflowMenu, 'full'))
     }
     return this.dropdownMenuWidth
   }
@@ -234,8 +257,7 @@ export default class PriorityMenu {
    */
   updateContainerWidth() {
     this.containerWidth = Math.floor(
-      this.container.getBoundingClientRect().width -
-        this.options.containerWidthOffset
+      getWidth(this.container, 'width') - this.options.containerWidthOffset
     )
     return this.containerWidth
   }

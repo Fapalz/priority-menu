@@ -39,6 +39,10 @@ body {
   display: block;
   font-size: 16px;
 
+  &__item {
+    margin-right: 30px;
+  }
+
   &__list {
     display: flex;
     width: 100%;
